@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<link rel="icon" type="image/png" href="{% static 'assets/img/favicon.ico' %}">
+		<title>
+			GoHives
+		</title>
+		<!--     Fonts and icons     -->
+		<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+		<!-- Nucleo Icons -->
+		<link href="{% static 'assets/css/nucleo-icons.css' %}" rel="stylesheet" />
+		<link href="{% static 'assets/css/nucleo-svg.css' %}" rel="stylesheet" />
+		<!-- Font Awesome Icons -->
+		<script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+		<link href="{% static 'assets/css/nucleo-svg.css' %}" rel="stylesheet" />
+		<!-- CSS Files -->
+		<link id="pagestyle" href="{% static 'assets/css/soft-ui-dashboard.css' %}" rel="stylesheet" />
+		<!-- jquery -->
+		<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+		  
+		{% block csslinks %}
+
+		{% endblock %}
+
+		
+		<body class="error-page">
+
+			<main class="main-content  mt-0">
+			  <div>
+				<section class="min-vh-100 d-flex align-items-center">
+				  <div class="container">
+					<div class="row mt-lg-0 mt-8">
+					  <div class="col-lg-5 my-auto">
+						<h1 class="display-1 text-bolder text-gradient text-info fadeIn1 fadeInBottom mt-5">Error 500</h1>
+						<h2 class="fadeIn3 fadeInBottom opacity-8">Algo salio mal...</h2>
+						<p class="lead opacity-6 fadeIn2 fadeInBottom">Le sugerimos volver a inicio mientras solventamos este inconveniente.</p>
+						<a href="{% url 'users:login' %}" class="btn bg-gradient-primary mt-4 fadeIn2 fadeInBottom">Ir a inicio</a>
+					  </div>
+					  <div class="col-lg-7 my-auto">
+						<img class="w-100 fadeIn1 fadeInBottom" src="{% static 'assets/img/illustrations/500.png' %}" alt="500-error">
+					  </div>
+					</div>
+				  </div>
+				</section>
+			  </div>
+			</main>
+			<!-- -------- START FOOTER 3 w/ COMPANY DESCRIPTION WITH LINKS & SOCIAL ICONS & COPYRIGHT ------- -->
+			<footer class="footer py-5">
+			  <div class="container">      
+				<div class="row">
+				  <div class="col-8 mx-auto text-center mt-1">
+					<p class="mb-0 text-secondary">
+					  Copyright © <script>
+						document.write(new Date().getFullYear())
+					  </script> 
+					  hecho con <i class="fa fa-heart"></i> por
+										  <a href="https://www.gohives.com/" class="font-weight-bold" target="_blank">GoHives Technologies</a>
+					</p>
+				  </div>
+				</div>
+			  </div>
+			</footer>
+			<!--   Core JS Files   -->
+		<script src="{% static 'assets/js/core/popper.min.js' %}"></script>
+		<script src="{% static 'assets/js/core/bootstrap.min.js' %}"></script>
+		
+
+		<script src="{% static 'assets/js/plugins/perfect-scrollbar.min.js' %}"></script>
+		<script src="{% static 'assets/js/plugins/smooth-scrollbar.min.js' %}"></script>
+		<script src="{% static 'assets/js/plugins/sweetalert.min.js' %}"></script>
+		<script>
+			var win = navigator.platform.indexOf('Win') > -1;
+			if (win && document.querySelector('#sidenav-scrollbar')) {
+			var options = {
+				damping: '0.5'
+			}
+			Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+			}
+		</script>
+		<!-- Github buttons -->
+		<script async defer src="https://buttons.github.io/buttons.js"></script>
+		<!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
+		<script src="{% static 'assets/js/soft-ui-dashboard.js' %}"></script>
+			
+		  </body>
+	</head>
+
+	
+
+</html>

@@ -1,0 +1,128 @@
+[project]
+name = "Adapti"
+version = "0.1.0"
+description = "Adapti uses IA for virtual virtual assistants."
+authors = [{ name = "Cristopher Arias", email = "vraeianova@gmail.com" }]
+dependencies = [
+
+  "django-extensions==3.1.5",
+  "django-debug-toolbar==3.2.2",
+  "django-simple-history==3.0.0",
+  "six==1.16.0",
+  "django-environ",
+  "argon2-cffi",
+  "whitenoise",
+  "gunicorn==20.1.0",
+  "pillow",
+  "dj-database-url==0.5.0",
+  "psycopg2-binary==2.9.7",
+  "pycparser==2.21",
+  "python-decouple==3.6",
+  "python-dateutil==2.8.2",
+  "django-crontab==0.7.1",
+  "pixelpay-sdk>=2.0.0",
+  "django-import-export==3.2.0",
+  "django-credit-cards==0.4.1",
+  "celery==5.2.6",
+  "django-celery-beat",
+  "redis==4.6.0",
+  "importlib-metadata==4.11.3",
+  "djangorestframework==3.14.0",
+  "drf-yasg==1.21.7",
+  "sentry-sdk==1.40.4",
+  "beautifulsoup4==4.12.3",
+  "discord>=2.3.2",
+  "openai>=1.25.1",
+  "requests>=2.31.0",
+  "djangorestframework-simplejwt>=5.3.1",
+  "python-dotenv>=1.0.1",
+  "django==4.2",
+]
+requires-python = "==3.11.*"
+readme = "README.md"
+license = { text = "MIT" }
+
+
+[tool.pdm]
+distribution = false
+
+[tool.pdm.dev-dependencies]
+dev = [
+  "black>=23.7.0",
+  "hypothesis>=6.82.7",
+  "ipython>=8.14.0",
+  "isort>=5.12.0",
+  "mypy>=1.5.1",
+  "pytest>=7.4.0",
+  "ruff>=0.0.286",
+  "pyfmt",
+]
+
+[build-system]
+requires = ["pdm-pep517"]
+build-backend = "pdm.pep517.api"
+
+
+[tool.pdm.scripts]
+server = "python src/manage.py runserver"
+servers = "python src/manage.py runservers"
+makemigrations = "python src/manage.py makemigrations"
+migrate = "python src/manage.py migrate"
+format = { composite = ["isort .", "black ."] }
+pyfmt = "black --check ."
+python = "ruff check ."
+python3 = "python"
+"lint:python" = { composite = ["ruff check .", "mypy ."] }
+lint = { composite = ["pyfmt", "lint:python"] }
+
+[tool.black]
+line-length = 79
+include = '\.pyi?$'
+exclude = '''
+(
+  /(
+      \.eggs
+    | \.git
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+  )/
+)
+'''
+
+
+[tool.isort]
+multi_line_output = 3
+lines_after_imports = 2
+line_length = 79
+force_grid_wrap = 0
+combine_as_imports = true
+include_trailing_comma = true
+
+[tool.mypy]
+plugins = "pydantic.mypy"
+ignore_missing_imports = true
+strict = true
+follow_imports = "silent"
+warn_redundant_casts = true
+warn_unused_ignores = true
+check_untyped_defs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_untyped_calls = false
+disallow_any_generics = true
+show_error_codes = true
+
+[tool.pytest.ini_options]
+filterwarnings = [
+  "ignore:'crypt' is deprecated:DeprecationWarning",
+  "ignore:'cgi' is deprecated:DeprecationWarning",
+]
+
+[tool.ruff]
+unfixable = ["I"]
