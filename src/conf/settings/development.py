@@ -3,7 +3,7 @@ from datetime import timedelta
 
 from dotenv import load_dotenv
 
-from .base import BASE_DIR, INSTALLED_APPS, MIDDLEWARE, TEMPLATES
+from .base import *
 
 
 load_dotenv()
@@ -32,6 +32,8 @@ ALLOWED_HOSTS = [
     "localhost",
     "0.0.0.0",
     "127.0.0.1",
+    "https://promoted-needed-sheep.ngrok-free.app",
+    "promoted-needed-sheep.ngrok-free.app",
 ]
 
 # =================TEMPLATES=================

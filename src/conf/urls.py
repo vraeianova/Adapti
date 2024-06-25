@@ -31,6 +31,7 @@ urlpatterns = (
     [
         path("admin/", admin.site.urls),
         path("api/v1/", include("apps.api.urls")),
+        path("api/v1/bot/", include("apps.bot.urls")),
         path(
             "api/v1/docs<format>/",
             schema_view.without_ui(cache_timeout=0),

@@ -12,7 +12,7 @@ class DiscordService:
     def __init__(self):
         load_dotenv()
         self.DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
-        self.bot_service = BotService()  # Instancia de BotService
+        self.bot_service = BotService()
 
         intents = discord.Intents.default()
         intents.messages = True
@@ -29,10 +29,8 @@ class DiscordService:
         if message.author == self.client.user:
             return
 
-        print("Mensaje recibido:", message.content)
-        response = await self.bot_service.handle_message(
-            message.content
-        )  # Llamada al método de instancia
+        print("Mensaje recibido por canal de comunicación:", message.content)
+        response = await self.bot_service.handle_message(message.content)
         await message.channel.send(response)
 
     def run(self):

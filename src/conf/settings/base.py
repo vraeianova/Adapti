@@ -3,19 +3,18 @@
 import os
 from pathlib import Path
 
+import environ
 from dotenv import load_dotenv
 
 
 load_dotenv()
-
+environ.Env.read_env()
 # =================DIRS=================
-
-ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
-APPS_DIR = ROOT_DIR / "apps"
+ROOT_DIR = environ.Path(__file__) - 3
+APPS_DIR = ROOT_DIR.path("apps")
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-
 # ===========ENVIRONMENT=====================
-DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = os.getenv("DEBUG")
 
 # =================LANGUAGE AND TIMEZONE=================
 LANGUAGE_CODE = "en-us"
@@ -26,7 +25,7 @@ USE_L10N = True
 USE_TZ = True
 
 # =================URL CONF=================
-ROOT_URLCONF = "conf.urls"
+ROOT_URLCONF = os.getenv("ROOT_URLCONF")
 
 # =================WSGI=================
 WSGI_APPLICATION = "conf.wsgi.application"
@@ -41,7 +40,7 @@ DJANGO_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "django.contrib.staticfiles",
+    # "django.contrib.staticfiles",
 ]
 
 THIRD_PARTY_APPS = [
@@ -59,7 +58,6 @@ LOCAL_APPS = [
 
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
-print("installed apps", INSTALLED_APPS)
 # =================PASSWORD_HASHERS=================
 PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.Argon2PasswordHasher",
@@ -98,14 +96,20 @@ DJANGO_MIDDLEWARE = [
 MIDDLEWARE = DJANGO_MIDDLEWARE
 
 # =================STATIC FILES=================
-STATIC_ROOT = str(ROOT_DIR / "staticfiles")
-STATIC_URL = "/static/"
-STATICFILES_DIRS = [str(ROOT_DIR / "static")]
+STATIC_ROOT = str(ROOT_DIR("staticfiles"))
+STATIC_ROOT = os.path.join(ROOT_DIR, "staticfiles")
 
-STATICFILES_FINDERS = [
-    "django.contrib.staticfiles.finders.FileSystemFinder",
-    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [
+    str(ROOT_DIR.path("static")),
 ]
+
+# print("testing static root", STATIC_ROOT)
+
+# STATICFILES_FINDERS = [
+#     "django.contrib.staticfiles.finders.FileSystemFinder",
+#     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+# ]
 
 # =================MEDIA=================
 MEDIA_URL = "/media/"
