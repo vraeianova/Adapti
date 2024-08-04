@@ -1,5 +1,3 @@
-# src/apps/bot/services/communication_channels_services/discord_service.py
-
 import os
 
 import discord

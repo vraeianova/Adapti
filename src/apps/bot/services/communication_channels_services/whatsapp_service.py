@@ -28,7 +28,7 @@ class WhatsAppService(View):
         self.bot_service = BotService()
 
     def post(self, request, *args, **kwargs):
-
+        print("hago el post")
         try:
             incoming_msg = request.POST.get("Body", "")
             from_number = request.POST.get("From", "")
@@ -50,6 +50,7 @@ class WhatsAppService(View):
 
             return HttpResponse(status=200)
         except Exception as e:
+            print("error", str(e))
             return HttpResponse(str(e), status=500)
 
     def send_message(self, to_number, message_body):

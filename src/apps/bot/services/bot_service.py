@@ -8,8 +8,10 @@ from apps.bot.services.openai_services.assistants_service import (
 from apps.bot.services.openai_services.message_service import MessageService
 from apps.bot.services.openai_services.run_service import RunService
 from apps.bot.services.openai_services.thread_service import ThreadService
-
-from ..utils import fetch_disabled_court_hours, fetch_dollar_price
+from apps.bot.services.zoho_services.zoho_auth_services import ZohoAuth
+from apps.bot.services.zoho_services.zoho_booking_service import (
+    ZohoBookingsService,
+)
 
 
 class BotService:
@@ -24,6 +26,8 @@ class BotService:
         self.message_service = MessageService(
             api_key=os.getenv("OPENAI_API_KEY")
         )
+        self.zoho_auth = ZohoAuth()
+        self.zoho_service = ZohoBookingsService()
 
     async def handle_message(self, message_content):
         thread = self.thread_service.create_thread()
@@ -61,26 +65,17 @@ class BotService:
 
     async def handle_required_action(self, run):
         tool_outputs = []
+        print("verificar si entro aqui")
         for tool in run.required_action.submit_tool_outputs.tool_calls:
-            if tool.function.name == "get_dollar_price":
-                dollar_price_info = await fetch_dollar_price()
-                tool_outputs.append(
-                    {
-                        "tool_call_id": tool.id,
-                        "output": json.dumps(dollar_price_info),
-                    }
-                )
-            elif tool.function.name == "get_disabled_court_hours":
+            if tool.function.name == "get_workspaces":
+                print("entro al tool")
                 arguments = json.loads(tool.function.arguments)
-                court_id = arguments["court_id"]
-                date = arguments["date"]
-                court_hours_info = await fetch_disabled_court_hours(
-                    court_id, date
-                )
+                workspace_id = arguments.get("workspace_id")
+                workspace_info = self.zoho_service.get_workspaces(workspace_id)
                 tool_outputs.append(
                     {
                         "tool_call_id": tool.id,
-                        "output": json.dumps(court_hours_info),
+                        "output": json.dumps(workspace_info),
                     }
                 )
 
