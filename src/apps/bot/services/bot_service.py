@@ -27,7 +27,7 @@ class BotService:
             api_key=os.getenv("OPENAI_API_KEY")
         )
         self.zoho_auth = ZohoAuth()
-        self.zoho_service = ZohoBookingsService()
+        self.zoho_service = ZohoBookingsService(self.zoho_auth)
 
     async def handle_message(self, message_content):
         thread = self.thread_service.create_thread()

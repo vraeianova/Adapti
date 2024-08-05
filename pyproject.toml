@@ -64,12 +64,14 @@ build-backend = "pdm.pep517.api"
 
 
 [tool.pdm.scripts]
-server = "python3 src/manage.py runserver"
-django_and_discord = "python3 src/manage.py runservers"
-shell = "python3 src/manage.py shell_plus"
-makemigrations = "python3 src/manage.py makemigrations"
-collectstatic = "python3 src/manage.py collectstatic"
-migrate = "python3 src/manage.py migrate"
+server = "python src/manage.py runserver"
+showmigrations = "python src/manage.py showmigrations"
+django_and_discord = "python src/manage.py runservers"
+shell = "python src/manage.py shell_plus"
+makemigrations = "python src/manage.py makemigrations"
+createsuperuser = "python src/manage.py createsuperuser"
+collectstatic = "python src/manage.py collectstatic"
+migrate = "python src/manage.py migrate"
 format = { composite = ["isort .", "black ."] }
 pyfmt = "black --check ."
 python = "ruff check ."

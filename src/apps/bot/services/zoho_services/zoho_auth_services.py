@@ -1,11 +1,10 @@
 import os
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import requests
-from dotenv import load_dotenv
+from django.utils import timezone
 
-
-load_dotenv()
+from apps.bot.models import ZohoToken
 
 
 class ZohoAuth:
@@ -13,35 +12,53 @@ class ZohoAuth:
         self.client_id = os.getenv("CLIENT_ID")
         self.client_secret = os.getenv("CLIENT_SECRET")
         self.redirect_uri = os.getenv("REDIRECT_URI")
-        self.authorization_code = os.getenv("AUTHORIZATION_CODE")
         self.account_url = os.getenv("ACCOUNT_URL")
         self.access_token = None
         self.refresh_token = None
         self.token_expiry = None
-        self.load_tokens()
+        self.load_tokens()  # Cargar los tokens existentes o generarlos si no existen
 
     def save_tokens(self, access_token, refresh_token, expires_in):
         self.access_token = access_token
         self.refresh_token = refresh_token
-        self.token_expiry = datetime.now() + timedelta(seconds=expires_in)
-        # Save to database (pseudo code)
-        db.save_tokens(access_token, refresh_token, self.token_expiry)
+        self.token_expiry = timezone.now() + timedelta(seconds=expires_in)
+        print(
+            f"Attempting to save tokens: Access Token - {access_token}, Refresh Token - {refresh_token}, Expiry - {self.token_expiry}"
+        )
+        try:
+            ZohoToken.objects.all().delete()  # Eliminar todos los tokens existentes
+            token = ZohoToken(
+                access_token=access_token,
+                refresh_token=refresh_token,
+                token_expiry=self.token_expiry,
+            )
+            token.save()
+            print("Tokens saved successfully")
+        except Exception as e:
+            print(f"Failed to save tokens: {e}")
 
     def load_tokens(self):
-        # Load tokens from database (pseudo code)
-        tokens = db.load_tokens()
-        self.access_token = tokens["access_token"]
-        self.refresh_token = tokens["refresh_token"]
-        self.token_expiry = tokens["token_expiry"]
+        try:
+            token = ZohoToken.objects.first()
+            if token:
+                self.access_token = token.access_token
+                self.refresh_token = token.refresh_token
+                self.token_expiry = token.token_expiry
+                print("Tokens loaded successfully")
+            else:
+                print("No existing tokens found, generating new tokens.")
+                self.get_token()
+        except Exception as e:
+            print(f"Failed to load tokens: {e}")
 
-    def get_tokens(self):
+    def get_token(self):
         url = f"{self.account_url}/oauth/v2/token"
         data = {
             "client_id": self.client_id,
             "client_secret": self.client_secret,
             "redirect_uri": self.redirect_uri,
             "grant_type": "authorization_code",
-            "code": self.authorization_code,
+            "code": os.getenv("AUTHORIZATION_CODE"),
         }
 
         response = requests.post(url, data=data)
@@ -53,6 +70,9 @@ class ZohoAuth:
                 tokens["expires_in"],
             )
         else:
+            print(
+                f"Failed to obtain access token: {response.status_code} - {response.text}"
+            )
             raise Exception("Failed to obtain access token.")
 
     def refresh_access_token(self):
@@ -73,10 +93,13 @@ class ZohoAuth:
                 tokens["expires_in"],
             )
         else:
+            print(
+                f"Failed to refresh access token: {response.status_code} - {response.text}"
+            )
             raise Exception("Failed to refresh access token.")
 
     def ensure_valid_access_token(self):
-        if datetime.now() >= self.token_expiry:
+        if timezone.now() >= self.token_expiry:
             self.refresh_access_token()
 
     def get_access_token(self):
