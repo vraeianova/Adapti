@@ -14,7 +14,6 @@ class ZohoBookingsService:
         self.access_token = self.zoho_auth.get_access_token()
 
     def get_headers(self):
-        print("access token", self.access_token)
         if not self.access_token:
             self.access_token = self.zoho_auth.get_access_token()
         return {
@@ -29,5 +28,79 @@ class ZohoBookingsService:
             url += f"?workspace_id={workspace_id}"
         headers = self.get_headers()
         response = requests.get(url, headers=headers)
+        print("workspaces data", response.json())
+        fetchappointment = self.fetch_appointments()
+        print("fetch appointment", fetchappointment)
+        services = self.fetch_services("4637313000000038020")
+        appointment = self.get_appointment(booking_id="AD-00002")
+        print("fetching services", services)
+        print("get appointment", appointment)
+        return response.json()
+
+    def fetch_appointments(
+        self,
+        service_id=None,
+        staff_id=None,
+        from_time=None,
+        to_time=None,
+        status=None,
+        need_customer_more_info=None,
+        customer_name=None,
+        customer_email=None,
+    ):
+        url = f"{self.api_url}/fetchappointment"
+        headers = self.get_headers()
+
+        # Crear la estructura 'data' como un diccionario vacío
+        data = {}
+
+        # Solo agregar parámetros a 'data' si están definidos
+        if service_id:
+            data["service_id"] = service_id
+        if staff_id:
+            data["staff_id"] = staff_id
+        if from_time:
+            data["from_time"] = from_time
+        if to_time:
+            data["to_time"] = to_time
+        if status:
+            data["status"] = status
+        if need_customer_more_info:
+            data["need_customer_more_info"] = need_customer_more_info
+        if customer_name:
+            data["customer_name"] = customer_name
+        if customer_email:
+            data["customer_email"] = customer_email
+
+        payload = {"data": data}
+        print("test payload", payload)
+        response = requests.post(url, headers=headers, json=payload)
+
+        response.raise_for_status()
+
+        return response.json()
+
+    def fetch_services(self, workspace_id=None):
+        url = f"{self.api_url}/services"
+        headers = self.get_headers()
+        if workspace_id:
+            url += f"?workspace_id={workspace_id}"
+        headers = self.get_headers()
+        response = requests.get(url, headers=headers)
         print("respond", response.json())
         return response.json()
+
+    def get_appointment(self, booking_id):
+        url = f"{self.api_url}/getappointment"
+        headers = self.get_headers()
+        print("verify booking id", booking_id)
+        if booking_id:
+            url += f"?booking_id={booking_id}"
+        headers = self.get_headers()
+        print("test url", url)
+        response = requests.get(url, headers=headers)
+        print("appointment info", response.json())
+        return response.json()
+
+    # def get_appointment(self,service_id=None):
+    #     service_id = "https://www.zohoapis.com/bookings/v1/json/fetchappointment"
