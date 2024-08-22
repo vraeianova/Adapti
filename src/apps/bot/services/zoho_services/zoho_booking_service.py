@@ -1,7 +1,9 @@
+import json
 import os
 
 import requests
 from dotenv import load_dotenv
+from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 
 load_dotenv()
@@ -29,7 +31,9 @@ class ZohoBookingsService:
         headers = self.get_headers()
         response = requests.get(url, headers=headers)
         print("workspaces data", response.json())
-        fetchappointment = self.fetch_appointments()
+        fetchappointment = self.fetch_appointments(
+            service_id="4637313000000038020"
+        )
         print("fetch appointment", fetchappointment)
         services = self.fetch_services("4637313000000038020")
         appointment = self.get_appointment(booking_id="AD-00002")
@@ -72,9 +76,22 @@ class ZohoBookingsService:
         if customer_email:
             data["customer_email"] = customer_email
 
-        payload = {"data": data}
-        print("test payload", payload)
-        response = requests.post(url, headers=headers, json=payload)
+        data_json = "{}" if not data else json.dumps(data)
+
+        m = MultipartEncoder(
+            fields={
+                "data": (
+                    None,
+                    data_json,
+                    "application/json",
+                ),
+            }
+        )
+        print("verificar m", m)
+
+        headers["Content-Type"] = m.content_type
+
+        response = requests.post(url, headers=headers, data=m)
 
         response.raise_for_status()
 
@@ -101,6 +118,3 @@ class ZohoBookingsService:
         response = requests.get(url, headers=headers)
         print("appointment info", response.json())
         return response.json()
-
-    # def get_appointment(self,service_id=None):
-    #     service_id = "https://www.zohoapis.com/bookings/v1/json/fetchappointment"

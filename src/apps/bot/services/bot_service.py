@@ -71,6 +71,7 @@ class BotService:
                 print("entro al tool")
                 arguments = json.loads(tool.function.arguments)
                 workspace_id = arguments.get("workspace_id")
+                print("verificar workspaces id", workspace_id)
                 workspace_info = self.zoho_service.get_workspaces(workspace_id)
                 tool_outputs.append(
                     {
