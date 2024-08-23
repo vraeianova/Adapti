@@ -1,2 +1,6 @@
-from .zoho_services.zoho_auth_services import ZohoAuth
-from .zoho_services.zoho_booking_service import ZohoBookingsService
+from .bot_service import BotService
+
+
+__all__ = [
+    "BotService",
+]

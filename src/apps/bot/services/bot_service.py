@@ -2,16 +2,13 @@ import asyncio
 import json
 import os
 
-from apps.bot.services.openai_services.assistants_service import (
+from apps.services.openai_services import (
     AssistantService,
+    MessageService,
+    RunService,
+    ThreadService,
 )
-from apps.bot.services.openai_services.message_service import MessageService
-from apps.bot.services.openai_services.run_service import RunService
-from apps.bot.services.openai_services.thread_service import ThreadService
-from apps.bot.services.zoho_services.zoho_auth_services import ZohoAuth
-from apps.bot.services.zoho_services.zoho_booking_service import (
-    ZohoBookingsService,
-)
+from apps.services.zoho_services import ZohoAuth, ZohoBookingsService
 
 
 class BotService:
@@ -57,21 +54,20 @@ class BotService:
                 messages = self.message_service.list_messages(
                     thread_id=thread.id
                 )
+                print("action:", action_status)
                 print(messages)
                 return messages.data[0].content[0].text.value
             elif action_status == "failed":
-                return "La ejecución ha fallado, por favor intenta de nuevo."
-        return "El proceso está en un estado inesperado."
+                return "Failed execution, please, try again."
+        return "The process is unexpected."
 
     async def handle_required_action(self, run):
         tool_outputs = []
-        print("verificar si entro aqui")
         for tool in run.required_action.submit_tool_outputs.tool_calls:
             if tool.function.name == "get_workspaces":
-                print("entro al tool")
+                print("tool used:", tool.function.name)
                 arguments = json.loads(tool.function.arguments)
                 workspace_id = arguments.get("workspace_id")
-                print("verificar workspaces id", workspace_id)
                 workspace_info = self.zoho_service.get_workspaces(workspace_id)
                 tool_outputs.append(
                     {

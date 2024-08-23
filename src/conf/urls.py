@@ -6,8 +6,17 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
+from .settings.base import MEDIA_ROOT, MEDIA_URL, STATIC_ROOT, STATIC_URL
 
-# Swagger documentation configuration view
+
+print(
+    "verificar",
+    settings.STATIC_URL,
+    settings.STATIC_ROOT,
+    settings.MEDIA_URL,
+    settings.MEDIA_ROOT,
+)
+
 schema_view = get_schema_view(
     openapi.Info(
         title="Snippets API",
@@ -31,7 +40,7 @@ urlpatterns = (
     [
         path("admin/", admin.site.urls),
         path("api/v1/", include("apps.api.urls")),
-        path("api/v1/bot/", include("apps.bot.urls")),
+        path("api/v1/services/", include("apps.services.urls")),
         path(
             "api/v1/docs<format>/",
             schema_view.without_ui(cache_timeout=0),
@@ -49,9 +58,10 @@ urlpatterns = (
         ),
         path("sentry-debug/", trigger_error),
     ]
-    + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    + static(STATIC_URL, document_root=STATIC_ROOT)
+    + static(MEDIA_URL, document_root=MEDIA_ROOT)
 )
+
 
 if settings.DEBUG:
     import debug_toolbar

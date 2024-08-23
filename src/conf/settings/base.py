@@ -25,7 +25,7 @@ USE_L10N = True
 USE_TZ = True
 
 # =================URL CONF=================
-ROOT_URLCONF = os.getenv("ROOT_URLCONF")
+ROOT_URLCONF = "conf.urls"
 
 # =================WSGI=================
 WSGI_APPLICATION = "conf.wsgi.application"
@@ -54,6 +54,9 @@ LOCAL_APPS = [
     "apps.utils",
     "apps.api",
     "apps.bot",
+    "apps.oauthtoken",
+    "apps.services",
+    "apps.companies",
 ]
 
 
@@ -96,20 +99,15 @@ DJANGO_MIDDLEWARE = [
 MIDDLEWARE = DJANGO_MIDDLEWARE
 
 # =================STATIC FILES=================
-STATIC_ROOT = str(ROOT_DIR("staticfiles"))
-STATIC_ROOT = os.path.join(ROOT_DIR, "staticfiles")
+STATIC_ROOT = str(ROOT_DIR("static"))
+STATIC_ROOT = os.path.join(ROOT_DIR, "static")
 
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [
     str(ROOT_DIR.path("static")),
 ]
+print("verificando en base", STATIC_ROOT, STATIC_URL, STATICFILES_DIRS)
 
-# print("testing static root", STATIC_ROOT)
-
-# STATICFILES_FINDERS = [
-#     "django.contrib.staticfiles.finders.FileSystemFinder",
-#     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-# ]
 
 # =================MEDIA=================
 MEDIA_URL = "/media/"
@@ -144,3 +142,5 @@ X_FRAME_OPTIONS = "DENY"
 # =================ADMIN=================
 ADMIN_URL = "admin/"
 ADMINS = [("Cristopher Arias", "vraeianova@gmail.com")]
+
+__all__ = ["BASE_DIR", "INSTALLED_APPS", "MIDDLEWARE", "TEMPLATES"]

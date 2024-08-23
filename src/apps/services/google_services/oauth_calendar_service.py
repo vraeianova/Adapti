@@ -6,7 +6,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import Resource, build
 
-from src.apps.bot.models import OauthToken
+from apps.oauthtoken.models import OauthToken
 
 
 class GoogleCalendarClient:

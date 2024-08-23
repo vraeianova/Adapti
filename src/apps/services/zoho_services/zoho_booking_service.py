@@ -24,21 +24,20 @@ class ZohoBookingsService:
         }
 
     def get_workspaces(self, workspace_id=None):
-        print("entrando")
         url = f"{self.api_url}/workspaces"
         if workspace_id:
             url += f"?workspace_id={workspace_id}"
         headers = self.get_headers()
         response = requests.get(url, headers=headers)
         print("workspaces data", response.json())
-        fetchappointment = self.fetch_appointments(
-            service_id="4637313000000038020"
-        )
-        print("fetch appointment", fetchappointment)
-        services = self.fetch_services("4637313000000038020")
-        appointment = self.get_appointment(booking_id="AD-00002")
-        print("fetching services", services)
-        print("get appointment", appointment)
+        # fetchappointment = self.fetch_appointments(
+        #     service_id="4637313000000038020"
+        # )
+        # print("fetch appointment", fetchappointment)
+        # services = self.fetch_services("4637313000000038020")
+        # appointment = self.get_appointment(booking_id="AD-00002")
+        # print("fetching services", services)
+        # print("get appointment", appointment)
         return response.json()
 
     def fetch_appointments(
@@ -54,11 +53,7 @@ class ZohoBookingsService:
     ):
         url = f"{self.api_url}/fetchappointment"
         headers = self.get_headers()
-
-        # Crear la estructura 'data' como un diccionario vacío
         data = {}
-
-        # Solo agregar parámetros a 'data' si están definidos
         if service_id:
             data["service_id"] = service_id
         if staff_id:
@@ -77,7 +72,6 @@ class ZohoBookingsService:
             data["customer_email"] = customer_email
 
         data_json = "{}" if not data else json.dumps(data)
-
         m = MultipartEncoder(
             fields={
                 "data": (
@@ -87,14 +81,9 @@ class ZohoBookingsService:
                 ),
             }
         )
-        print("verificar m", m)
-
         headers["Content-Type"] = m.content_type
-
         response = requests.post(url, headers=headers, data=m)
-
         response.raise_for_status()
-
         return response.json()
 
     def fetch_services(self, workspace_id=None):
@@ -104,17 +93,13 @@ class ZohoBookingsService:
             url += f"?workspace_id={workspace_id}"
         headers = self.get_headers()
         response = requests.get(url, headers=headers)
-        print("respond", response.json())
         return response.json()
 
     def get_appointment(self, booking_id):
         url = f"{self.api_url}/getappointment"
         headers = self.get_headers()
-        print("verify booking id", booking_id)
         if booking_id:
             url += f"?booking_id={booking_id}"
         headers = self.get_headers()
-        print("test url", url)
         response = requests.get(url, headers=headers)
-        print("appointment info", response.json())
         return response.json()

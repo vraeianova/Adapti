@@ -3,7 +3,7 @@ from datetime import timedelta
 
 from dotenv import load_dotenv
 
-from .base import *
+from .base import BASE_DIR, INSTALLED_APPS, MIDDLEWARE, ROOT_URLCONF, TEMPLATES
 
 
 load_dotenv()
@@ -37,15 +37,6 @@ ALLOWED_HOSTS = [
 
 # =================TEMPLATES=================
 TEMPLATES[0]["OPTIONS"]["debug"] = DEBUG  # NOQA
-
-# =================CACHES=================
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "",
-    }
-}
-
 
 # =================APPS=================
 INSTALLED_APPS += ["django_extensions", "debug_toolbar", "gunicorn"]
