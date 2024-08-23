@@ -1,17 +1,10 @@
-""" User's Views """
-
-# Django
-from datetime import datetime
-
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, get_user_model, login, logout
-from django.contrib.auth.forms import PasswordChangeForm
-from django.contrib.auth.views import LoginView, PasswordChangeView
+from django.contrib.auth.views import LoginView
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
 from django.db import IntegrityError, transaction
-from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.template.loader import render_to_string
@@ -26,16 +19,14 @@ from django.views.generic import (
     View,
 )
 
-# Local Django
+from apps.users.models import Profile
 from apps.utils import generate_password
 from apps.utils.tokens import account_activation_token
 
 from ..forms import ProfileCreateForm, SignupUsersForm
 
 
-# Models
 User = get_user_model()
-from apps.users.models import Profile
 
 
 class LoginView(LoginView):
@@ -49,7 +40,7 @@ class LoginView(LoginView):
         if user is not None:
             if user.is_active:
                 login(request, user)
-                if user.new_pass_confirmed == False:
+                if user.new_pass_confirmed is False:
                     return HttpResponseRedirect(
                         reverse("users:password_change")
                     )
@@ -181,7 +172,7 @@ class CustomPasswordChangeView(View):
             messages.add_message(
                 self.request,
                 messages.SUCCESS,
-                f"¡Contraseña actualizada!",
+                "¡Contraseña actualizada!",
                 extra_tags="success",
             )
             return HttpResponseRedirect(self.success_url)
@@ -189,7 +180,7 @@ class CustomPasswordChangeView(View):
             messages.add_message(
                 self.request,
                 messages.SUCCESS,
-                f"¡Las contraseñas no coinciden!",
+                "¡Las contraseñas no coinciden!",
                 extra_tags="error",
             )
             return HttpResponseRedirect(self.request.path_info)
@@ -278,7 +269,7 @@ class UserAddView(CreateView):
                     messages.add_message(
                         self.request,
                         messages.SUCCESS,
-                        f"¡Usuario creado correctamente!",
+                        "¡Usuario creado correctamente!",
                         extra_tags="success",
                     )
                     return HttpResponseRedirect(reverse("users:users_list"))
@@ -343,16 +334,17 @@ class UserUpdateView(UpdateView):
                     messages.add_message(
                         self.request,
                         messages.SUCCESS,
-                        f"¡Usuario actualizado correctamente!",
+                        "¡Usuario actualizado correctamente!",
                         extra_tags="success",
                     )
                 return HttpResponseRedirect(self.request.path_info)
 
             except IntegrityError as e:
+                print("e", e)
                 messages.add_message(
                     self.request,
                     messages.SUCCESS,
-                    f"¡Error al actualizar usuario!",
+                    "¡Error al actualizar usuario!",
                     extra_tags="error",
                 )
             return HttpResponseRedirect(self.request.path_info)

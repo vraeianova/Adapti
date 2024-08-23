@@ -40,7 +40,7 @@ DJANGO_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    # "django.contrib.staticfiles",
+    "django.contrib.staticfiles",
 ]
 
 THIRD_PARTY_APPS = [
@@ -99,10 +99,9 @@ DJANGO_MIDDLEWARE = [
 MIDDLEWARE = DJANGO_MIDDLEWARE
 
 # =================STATIC FILES=================
-STATIC_ROOT = str(ROOT_DIR("static"))
-STATIC_ROOT = os.path.join(ROOT_DIR, "static")
+STATIC_ROOT = os.path.join(ROOT_DIR, "staticfiles")
 
-STATIC_URL = "/static/"
+STATIC_URL = "static/"
 STATICFILES_DIRS = [
     str(ROOT_DIR.path("static")),
 ]
@@ -141,5 +140,3 @@ X_FRAME_OPTIONS = "DENY"
 # =================ADMIN=================
 ADMIN_URL = "admin/"
 ADMINS = [("Cristopher Arias", "vraeianova@gmail.com")]
-
-__all__ = ["BASE_DIR", "INSTALLED_APPS", "MIDDLEWARE", "TEMPLATES"]

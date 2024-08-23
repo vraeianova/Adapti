@@ -19,4 +19,4 @@ class OauthToken(models.Model):
     token_expiry = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.provider.capitalize()} Token (Expires: {self.expiry or self.token_expiry})"
+        return f"{self.provider.capitalize()} Token (Expires: {self.token_expiry})"

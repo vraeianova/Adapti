@@ -1,12 +1,9 @@
 from django.conf import settings
-from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
-
-from .settings.base import MEDIA_ROOT, MEDIA_URL, STATIC_ROOT, STATIC_URL
 
 
 schema_view = get_schema_view(
@@ -50,8 +47,8 @@ urlpatterns = (
         ),
         path("sentry-debug/", trigger_error),
     ]
-    + static(STATIC_URL, document_root=STATIC_ROOT)
-    + static(MEDIA_URL, document_root=MEDIA_ROOT)
+    # + static(STATIC_URL, document_root=STATIC_ROOT)
+    # + static(MEDIA_URL, document_root=MEDIA_ROOT)
 )
 
 

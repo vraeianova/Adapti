@@ -28,6 +28,7 @@ class ZohoAuth:
         try:
             OauthToken.objects.filter(provider="zoho").delete()
             token = OauthToken(
+                provider="zoho",
                 access_token=access_token,
                 refresh_token=refresh_token,
                 token_expiry=self.token_expiry,
