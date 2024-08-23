@@ -6,22 +6,12 @@ from googleapiclient.errors import HttpError
 
 class GoogleCalendarService:
     def __init__(self, credentials):
-        """
-        Inicializa el servicio de Google Calendar con las credenciales autenticadas.
-        :param credentials: Credenciales de OAuth2 obtenidas tras la autenticación.
-        """
+
         self.service = build("calendar", "v3", credentials=credentials)
 
     def list_events(self, max_results=10):
-        """
-        Lista los próximos eventos en el calendario principal del usuario.
-        :param max_results: Número máximo de eventos a devolver.
-        :return: Lista de eventos.
-        """
         try:
-            now = (
-                datetime.datetime.utcnow().isoformat() + "Z"
-            )  # 'Z' indica UTC time
+            now = datetime.datetime.utcnow().isoformat() + "Z"
             events_result = (
                 self.service.events()
                 .list(
@@ -60,16 +50,7 @@ class GoogleCalendarService:
         location=None,
         attendees=None,
     ):
-        """
-        Crea un evento en el calendario principal del usuario.
-        :param summary: Título del evento.
-        :param start_time: Hora de inicio en formato RFC3339.
-        :param end_time: Hora de finalización en formato RFC3339.
-        :param description: Descripción del evento.
-        :param location: Ubicación del evento.
-        :param attendees: Lista de asistentes (correos electrónicos).
-        :return: Evento creado.
-        """
+
         event = {
             "summary": summary,
             "location": location,
@@ -110,17 +91,6 @@ class GoogleCalendarService:
         location=None,
         attendees=None,
     ):
-        """
-        Actualiza un evento existente en el calendario principal del usuario.
-        :param event_id: ID del evento a actualizar.
-        :param summary: Título del evento.
-        :param start_time: Hora de inicio en formato RFC3339.
-        :param end_time: Hora de finalización en formato RFC3339.
-        :param description: Descripción del evento.
-        :param location: Ubicación del evento.
-        :param attendees: Lista de asistentes (correos electrónicos).
-        :return: Evento actualizado.
-        """
         try:
             event = (
                 self.service.events()
@@ -154,11 +124,6 @@ class GoogleCalendarService:
             return None
 
     def delete_event(self, event_id):
-        """
-        Elimina un evento del calendario principal del usuario.
-        :param event_id: ID del evento a eliminar.
-        :return: None.
-        """
         try:
             self.service.events().delete(
                 calendarId="primary", eventId=event_id

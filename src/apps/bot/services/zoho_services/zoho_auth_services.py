@@ -4,7 +4,7 @@ from datetime import timedelta
 import requests
 from django.utils import timezone
 
-from apps.bot.models import ZohoToken
+from apps.bot.models import OauthToken
 
 
 class ZohoAuth:
@@ -26,8 +26,8 @@ class ZohoAuth:
             f"Attempting to save tokens: Access Token - {access_token}, Refresh Token - {refresh_token}, Expiry - {self.token_expiry}"
         )
         try:
-            ZohoToken.objects.all().delete()  # Eliminar todos los tokens existentes
-            token = ZohoToken(
+            OauthToken.objects.filter(provider="zoho").delete()
+            token = OauthToken(
                 access_token=access_token,
                 refresh_token=refresh_token,
                 token_expiry=self.token_expiry,
@@ -39,7 +39,7 @@ class ZohoAuth:
 
     def load_tokens(self):
         try:
-            token = ZohoToken.objects.first()
+            token = OauthToken.objects.filter(provider="zoho").first()
             if token:
                 self.access_token = token.access_token
                 self.refresh_token = token.refresh_token

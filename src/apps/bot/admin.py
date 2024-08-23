@@ -1,8 +1,8 @@
 from django.contrib import admin
 
-from .models import ZohoToken
+from .models import OauthToken
 
 
-@admin.register(ZohoToken)
-class ZohoTokenAdmin(admin.ModelAdmin):
+@admin.register(OauthToken)
+class OauthTokenAdmin(admin.ModelAdmin):
     list_display = ("access_token", "refresh_token", "token_expiry")
