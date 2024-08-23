@@ -27,7 +27,7 @@ class DiscordService:
         if message.author == self.client.user:
             return
 
-        print("Mensaje recibido por canal de comunicación:", message.content)
+        print("Message received:", message.content)
         response = await self.bot_service.handle_message(message.content)
         await message.channel.send(response)
 

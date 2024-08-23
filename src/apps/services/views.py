@@ -28,7 +28,6 @@ class WhatsAppService(View):
         self.bot_service = BotService()
 
     def post(self, request, *args, **kwargs):
-        print("hago el post")
         try:
             incoming_msg = request.POST.get("Body", "")
             from_number = request.POST.get("From", "")

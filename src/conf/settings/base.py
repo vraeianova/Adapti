@@ -106,7 +106,6 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [
     str(ROOT_DIR.path("static")),
 ]
-print("verificando en base", STATIC_ROOT, STATIC_URL, STATICFILES_DIRS)
 
 
 # =================MEDIA=================

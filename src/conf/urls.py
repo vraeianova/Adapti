@@ -9,14 +9,6 @@ from rest_framework import permissions
 from .settings.base import MEDIA_ROOT, MEDIA_URL, STATIC_ROOT, STATIC_URL
 
 
-print(
-    "verificar",
-    settings.STATIC_URL,
-    settings.STATIC_ROOT,
-    settings.MEDIA_URL,
-    settings.MEDIA_ROOT,
-)
-
 schema_view = get_schema_view(
     openapi.Info(
         title="Snippets API",
