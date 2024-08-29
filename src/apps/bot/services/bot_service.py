@@ -2,29 +2,23 @@ import asyncio
 import json
 import os
 
-from apps.services.openai_services import (
-    AssistantService,
-    MessageService,
-    RunService,
-    ThreadService,
-)
-from apps.services.zoho_services import ZohoAuth, ZohoBookingsService
+from apps.openai.config import OpenAIConfig
+from apps.zoho.config import ZohoConfig
 
 
 class BotService:
-    def __init__(self):
-        self.assistant_service = AssistantService(
-            api_key=os.getenv("OPENAI_API_KEY")
-        )
-        self.thread_service = ThreadService(
-            api_key=os.getenv("OPENAI_API_KEY")
-        )
-        self.run_service = RunService(api_key=os.getenv("OPENAI_API_KEY"))
-        self.message_service = MessageService(
-            api_key=os.getenv("OPENAI_API_KEY")
-        )
-        self.zoho_auth = ZohoAuth()
-        self.zoho_service = ZohoBookingsService(self.zoho_auth)
+    def __init__(self, openai_config=None, zoho_config=None):
+        if openai_config is None:
+            openai_config = OpenAIConfig()
+
+        if zoho_config is None:
+            zoho_config = ZohoConfig()
+
+        self.assistant_service = openai_config.get_assistant_service()
+        self.thread_service = openai_config.get_thread_service()
+        self.run_service = openai_config.get_run_service()
+        self.message_service = openai_config.get_message_service()
+        self.zoho_booking_service = zoho_config.get_zoho_bookings_service()
 
     async def handle_message(self, message_content):
         thread = self.thread_service.create_thread()
@@ -68,7 +62,9 @@ class BotService:
                 print("tool used:", tool.function.name)
                 arguments = json.loads(tool.function.arguments)
                 workspace_id = arguments.get("workspace_id")
-                workspace_info = self.zoho_service.get_workspaces(workspace_id)
+                workspace_info = self.zoho_booking_service.get_workspaces(
+                    workspace_id
+                )
                 tool_outputs.append(
                     {
                         "tool_call_id": tool.id,

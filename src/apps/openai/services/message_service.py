@@ -1,17 +1,9 @@
-# src/apps/bot/services/openai_service/message_service.py
-
-import os
-
-from dotenv import load_dotenv
 from openai import OpenAI
-
-
-load_dotenv()
 
 
 class MessageService:
     def __init__(self, api_key=None):
-        self.client = OpenAI(api_key=api_key or os.getenv("OPENAI_API_KEY"))
+        self.client = OpenAI(api_key=api_key)
 
     def create_message(self, thread_id, role, content):
         return self.client.beta.threads.messages.create(

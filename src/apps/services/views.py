@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from dotenv import load_dotenv
 from twilio.rest import Client
 
-from apps.bot.services.bot_service import BotService
+from src.apps.bot.bot import Bot
 
 
 load_dotenv()
@@ -25,7 +25,7 @@ class WhatsAppService(View):
             "TWILIO_WHATSAPP_NUMBER_SANDBOX"
         )
         self.client = Client(self.TWILIO_ACCOUNT_SID, self.TWILIO_AUTH_TOKEN)
-        self.bot_service = BotService()
+        self.bot = Bot()
 
     def post(self, request, *args, **kwargs):
         try:
@@ -42,9 +42,7 @@ class WhatsAppService(View):
 
             processed_messages.add(message_sid)
 
-            response_text = asyncio.run(
-                self.bot_service.handle_message(incoming_msg)
-            )
+            response_text = asyncio.run(self.bot.handle_message(incoming_msg))
             self.send_message(from_number, response_text)
 
             return HttpResponse(status=200)

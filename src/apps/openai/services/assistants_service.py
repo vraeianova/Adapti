@@ -1,5 +1,3 @@
-# bot/services/openai_service/assistant_service.py
-
 from openai import OpenAI
 
 
