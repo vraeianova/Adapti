@@ -31,9 +31,9 @@ class WhatsappWebhook(APIView):
             return Response({"info": "Message already processed"}, status=200)
 
         processed_messages.add(message_sid)
-        response_text = asyncio.run(
+        asyncio.run(
             self.bot_service.handle_message(
                 incoming_msg, "whatsapp", {"to_number": from_number}
             )
         )
-        return Response({"message": response_text}, status=200)
+        return Response({"status": "Message is being processed"}, status=200)

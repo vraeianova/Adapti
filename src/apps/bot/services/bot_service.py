@@ -41,11 +41,9 @@ class BotService:
             assistant_id=os.getenv("OPENAI_ASSISTANT_ID"),
         )
         if run.status == "completed":
-
             messages = self.message_service.list_messages(thread_id=thread.id)
             response = messages.data[0].content[0].text.value
         elif run.status == "requires_action":
-            print("entre a required actions")
             response = self.handle_required_action(run)
         else:
             response = "The process is unexpected."
