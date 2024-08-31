@@ -29,7 +29,6 @@ urlpatterns = (
     [
         path("admin/", admin.site.urls),
         path("api/v1/", include("apps.api.urls")),
-        path("api/v1/services/", include("apps.services.urls")),
         path(
             "api/v1/docs<format>/",
             schema_view.without_ui(cache_timeout=0),

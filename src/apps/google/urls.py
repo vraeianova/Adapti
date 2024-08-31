@@ -1,6 +1,6 @@
 from django.urls import path
 
-from apps.services.views import WhatsAppService
+from apps.google.views import WhatsAppService
 
 
 urlpatterns = [

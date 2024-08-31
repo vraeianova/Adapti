@@ -5,6 +5,8 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
+from .views.whatsapp_views import WhatsappWebhook
+
 
 urlpatterns = [
     path(
@@ -14,4 +16,7 @@ urlpatterns = [
         "auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"
     ),
     path("auth/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
+    path(
+        "whatsapp-webhook", WhatsappWebhook.as_view(), name="whatsapp_webhook"
+    ),
 ]

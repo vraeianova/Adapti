@@ -3,7 +3,7 @@ import os
 import discord
 from dotenv import load_dotenv
 
-from apps.bot.services.bot_service import BotService
+from src.apps.bot.services.bot_service import BotService
 
 
 class DiscordService:
