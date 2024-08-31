@@ -1,9 +1,10 @@
 import asyncio
 
-from bot.services.bot_service import BotService
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from apps.bot.services.bot_service import BotService
 
 
 processed_messages = set()

@@ -1,8 +1,8 @@
-from bot.channels.base_channel import BaseChannel
-from whatsapp.services.whatsapp_service import WhatsappService
+from apps.bot.channels.base_channel import BaseCommunicationChannel
+from apps.whatsapp.services.whatsapp_service import WhatsappService
 
 
-class WhatsAppChannel(BaseChannel):
+class WhatsAppChannel(BaseCommunicationChannel):
     def __init__(self):
         self.whatsapp_service = WhatsappService()
 

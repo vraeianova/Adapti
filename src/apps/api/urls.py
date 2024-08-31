@@ -17,6 +17,6 @@ urlpatterns = [
     ),
     path("auth/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
     path(
-        "whatsapp-webhook", WhatsappWebhook.as_view(), name="whatsapp_webhook"
+        "whatsapp-webhook/", WhatsappWebhook.as_view(), name="whatsapp_webhook"
     ),
 ]

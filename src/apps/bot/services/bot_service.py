@@ -2,8 +2,7 @@ import asyncio
 import json
 import os
 
-from channels.channel_manager import ChannelManager
-
+from apps.bot.channels.channel_manager import ChannelManager
 from apps.openai.config import OpenAIConfig
 from apps.zoho.config import ZohoConfig
 
@@ -37,7 +36,7 @@ class BotService:
             thread_id=thread.id, role="user", content=message_content
         )
         run = self.run_service.create_run(
-            thread_id=thread.id, assistant_id=os.getenv("ASSISTANT_ID")
+            thread_id=thread.id, assistant_id=os.getenv("OPENAI_ASSISTANT_ID")
         )
 
         while True:
@@ -58,7 +57,6 @@ class BotService:
         else:
             response = "The process is unexpected."
 
-        # Enviar la respuesta usando el canal específico
         await channel.send_message(recipient_info["to_number"], response)
         return response
 
