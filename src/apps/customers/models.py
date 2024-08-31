@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class Company(models.Model):
+class Customer(models.Model):
     # ZOHO_WORKSPACE_TYPES = [
     #     ("mechanic", "Mechanic"),
     #     ("medical", "Medical"),
