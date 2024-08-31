@@ -6,7 +6,7 @@ class RunService:
         self.client = OpenAI(api_key=api_key)
 
     def create_run(self, thread_id, assistant_id):
-        return self.client.beta.threads.runs.create(
+        return self.client.beta.threads.runs.create_and_poll(
             thread_id=thread_id, assistant_id=assistant_id
         )
 

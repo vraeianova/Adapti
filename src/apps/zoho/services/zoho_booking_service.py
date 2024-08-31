@@ -11,7 +11,7 @@ load_dotenv()
 
 class ZohoBookingsService:
     def __init__(self, zoho_auth):
-        self.api_url = os.getenv("API_URL")
+        self.api_url = os.getenv("ZOHO_API_URL")
         self.zoho_auth = zoho_auth
         self.access_token = self.zoho_auth.get_access_token()
 

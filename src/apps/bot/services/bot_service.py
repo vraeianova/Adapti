@@ -35,32 +35,25 @@ class BotService:
         self.message_service.create_message(
             thread_id=thread.id, role="user", content=message_content
         )
+
         run = self.run_service.create_run(
-            thread_id=thread.id, assistant_id=os.getenv("OPENAI_ASSISTANT_ID")
+            thread_id=thread.id,
+            assistant_id=os.getenv("OPENAI_ASSISTANT_ID"),
         )
-
-        while True:
-            run = await self.run_service.retrieve_run(
-                thread_id=thread.id, run_id=run.id
-            )
-            if run.status in ["completed", "failed", "requires_action"]:
-                break
-            await asyncio.sleep(1)
-
         if run.status == "completed":
-            messages = await self.message_service.list_messages(
-                thread_id=thread.id
-            )
+
+            messages = self.message_service.list_messages(thread_id=thread.id)
             response = messages.data[0].content[0].text.value
         elif run.status == "requires_action":
-            response = await self.handle_required_action(run)
+            print("entre a required actions")
+            response = self.handle_required_action(run)
         else:
             response = "The process is unexpected."
 
-        await channel.send_message(recipient_info["to_number"], response)
+        channel.send_message(recipient_info["to_number"], response)
         return response
 
-    async def handle_required_action(self, run):
+    def handle_required_action(self, run):
         tool_outputs = []
         for tool in run.required_action.submit_tool_outputs.tool_calls:
             if tool.function.name == "get_workspaces":
@@ -84,16 +77,14 @@ class BotService:
                     run_id=run.id,
                     tool_outputs=tool_outputs,
                 )
-                print("Tool outputs submitted successfully.")
+                if run.status == "completed":
+                    messages = self.message_service.list_messages(
+                        thread_id=run.thread_id
+                    )
+                    response = messages.data[0].content[0].text.value
+                else:
+                    response = "The process is unexpected."
             except Exception as e:
                 print("Failed to submit tool outputs:", e)
 
-        while True:
-            run = self.run_service.retrieve_run(
-                thread_id=run.thread_id, run_id=run.id
-            )
-            if run.status in ["completed", "failed"]:
-                break
-            await asyncio.sleep(1)
-
-        return run.status
+        return response
