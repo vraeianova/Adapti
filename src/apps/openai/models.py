@@ -2,7 +2,9 @@ from django.db import models
 
 
 class Assistant(models.Model):
-    assistant_id = models.CharField(max_length=100, unique=True)
+    assistant_id = models.CharField(
+        max_length=100, unique=True, null=True, blank=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
