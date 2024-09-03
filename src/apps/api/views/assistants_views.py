@@ -11,7 +11,6 @@ from apps.openai.config import OpenAIConfig
 
 class AssistantCreateView(APIView):
     def post(self, request, *args, **kwargs):
-        # Validar los datos de entrada utilizando el serializador específico para creación
         create_serializer = AssistantCreateSerializer(data=request.data)
         if not create_serializer.is_valid():
             return Response(
