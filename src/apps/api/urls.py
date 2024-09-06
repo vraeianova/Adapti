@@ -6,6 +6,7 @@ from rest_framework_simplejwt.views import (
 )
 
 from .views.assistants_views import AssistantCreateView, AssistantSyncView
+from .views.conversations_views import HumanInterventionUpdateView
 from .views.whatsapp_views import WhatsappWebhook
 
 
@@ -25,5 +26,11 @@ urlpatterns = [
     ),
     path(
         "sync-assistants/", AssistantSyncView.as_view(), name="sync-assistants"
+    ),
+    # THREADS VIEWS
+    path(
+        "human-intervention/<str:thread_id>/update/",
+        HumanInterventionUpdateView.as_view(),
+        name="human-intervention-update",
     ),
 ]

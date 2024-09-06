@@ -57,6 +57,7 @@ LOCAL_APPS = [
     "apps.oauthtoken",
     "apps.customers",
     "apps.openai",
+    "apps.conversations",
 ]
 
 
