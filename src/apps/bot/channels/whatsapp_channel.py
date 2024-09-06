@@ -6,9 +6,9 @@ class WhatsAppChannel(BaseCommunicationChannel):
     def __init__(self):
         self.whatsapp_service = WhatsappService()
 
-    def send_message(self, to_number, message_body):
+    def send_message(self, to_number, message_body, from_number):
         return self.whatsapp_service.send_whatsapp_message(
-            to_number, message_body
+            to_number, message_body, from_number
         )
 
     def receive_message(self, request):

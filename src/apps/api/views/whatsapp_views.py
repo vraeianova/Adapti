@@ -18,22 +18,48 @@ class WhatsappWebhook(APIView):
         self.bot_service = BotService()
 
     def post(self, request, *args, **kwargs):
-        incoming_msg = request.data.get("Body", "")
-        from_number = request.data.get("From", "")
-        message_sid = request.data.get("MessageSid", "")
+        # Extraer el cuerpo del mensaje y los números de interés desde la solicitud de Twilio
+        incoming_msg = request.data.get(
+            "Body", ""
+        )  # Mensaje recibido del cliente externo
+        from_number = request.data.get(
+            "From", ""
+        )  # Número de WhatsApp del cliente externo
+        to_number = request.data.get(
+            "To", ""
+        )  # Número de WhatsApp de la clínica (negocio)
+        message_sid = request.data.get(
+            "MessageSid", ""
+        )  # Identificador único del mensaje
 
-        if not incoming_msg or not from_number or not message_sid:
+        # Validar que toda la información necesaria esté presente
+        if (
+            not incoming_msg
+            or not from_number
+            or not to_number
+            or not message_sid
+        ):
             return Response(
                 {"error": "Missing necessary message details."}, status=400
             )
 
+        # Verificar si el mensaje ya fue procesado
         if message_sid in processed_messages:
             return Response({"info": "Message already processed"}, status=200)
 
+        # Marcar el mensaje como procesado
         processed_messages.add(message_sid)
-        asyncio.run(
-            self.bot_service.handle_message(
-                incoming_msg, "whatsapp", {"to_number": from_number}
-            )
+
+        # Ejecutar la lógica del bot para procesar el mensaje y responder
+
+        self.bot_service.handle_message(
+            incoming_msg,  # Contenido del mensaje
+            "whatsapp",  # Canal utilizado
+            {
+                "from_number": from_number,
+                "to_number": to_number,
+            },  # Números involucrados
         )
+
+        # Responder que el mensaje está siendo procesado
         return Response({"status": "Message is being processed"}, status=200)

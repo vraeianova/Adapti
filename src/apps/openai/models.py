@@ -21,8 +21,8 @@ class Assistant(models.Model):
     temperature = models.FloatField(default=1.0)
     top_p = models.FloatField(default=1.0)
     response_format = models.CharField(max_length=50, default="auto")
-    tools = models.JSONField(default=dict)
-    tool_resources = models.JSONField(default=dict)
+    tools = models.JSONField(default=dict, null=True, blank=True)
+    tool_resources = models.JSONField(default=dict, null=True, blank=True)
 
     def __str__(self):
         return self.name

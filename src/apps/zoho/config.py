@@ -18,7 +18,7 @@ class ZohoConfig:
         self.account_url = account_url or os.getenv("ZOHO_ACCOUNT_URL")
         self.authorization_code = authorization_code or os.getenv(
             "ZOHO_AUTHORIZATION_CODE"
-        )  # Inject authorization code
+        )
 
     def get_zoho_auth(self):
         return ZohoAuth(
