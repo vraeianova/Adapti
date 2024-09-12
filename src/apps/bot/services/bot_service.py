@@ -5,7 +5,6 @@ from django.utils import timezone
 
 from apps.bot.channels.channel_manager import ChannelManager
 from apps.conversations.models import Thread
-from apps.customers.models import Customer
 from apps.openai.config import OpenAIConfig
 from apps.openai.models import Assistant
 from apps.zoho.config import ZohoConfig
@@ -14,6 +13,7 @@ from apps.zoho.config import ZohoConfig
 class BotService:
     def __init__(
         self,
+        channel_name: str,
         openai_config: OpenAIConfig = None,
         zoho_config: ZohoConfig = None,
     ) -> None:
@@ -24,72 +24,72 @@ class BotService:
 
         if openai_config is None:
             openai_config = OpenAIConfig()
-        if zoho_config is None:
-            zoho_config = ZohoConfig()
+        zoho_config = None
 
         self.assistant_service = openai_config.get_assistant_service()
         self.thread_service = openai_config.get_thread_service()
         self.run_service = openai_config.get_run_service()
         self.message_service = openai_config.get_message_service()
-        self.zoho_booking_service = zoho_config.get_zoho_bookings_service()
+        # self.zoho_booking_service = zoho_config.get_zoho_bookings_service()
+
+        self.channel = self.channel_manager.get_channel(channel_name)
+        if not self.channel:
+            raise ValueError(
+                f"Unsupported communication channel: {channel_name}"
+            )
 
     def handle_message(
         self,
         message_content: str,
-        channel_name: str,
         recipient_info: Dict[str, Any],
     ) -> None:
         """
         Handles an incoming message by determining the appropriate assistant and sending a response.
         """
-        # Get the communication channel
-        channel = self.channel_manager.get_channel(channel_name)
-        if not channel:
-            raise ValueError(
-                f"Unsupported communication channel: {channel_name}"
-            )
+        external_customer_phone = recipient_info["from_number"]
+        company_whatsapp_number = recipient_info["to_number"]
+        print("company wha", company_whatsapp_number)
+        # Obtener el cliente (empresa) y el asistente
+        # company = self._get_customer_by_phone(company_whatsapp_number)
+        assistant = Assistant.objects.get(
+            company__phone=company_whatsapp_number
+        )
 
-        # Get numbers involved in the communication
-        external_customer_number = recipient_info["from_number"]
-        clinic_whatsapp_number = recipient_info["to_number"]
-
-        # Look up the customer based on the clinic's WhatsApp number
-        try:
-            customer = Customer.objects.get(phone=clinic_whatsapp_number)
-        except Customer.DoesNotExist:
-            raise ValueError(
-                f"No customer found for the clinic's WhatsApp number: {clinic_whatsapp_number}"
-            )
-
-        # Retrieve the assistant associated with the customer
-        try:
-            assistant = Assistant.objects.get(customer=customer)
-        except Assistant.DoesNotExist:
-            raise ValueError(
-                f"No assistant found for customer: {customer.name}"
-            )
-
-        # Check if a thread already exists and needs human intervention
+        # Intentar obtener un thread existente para este cliente y asistente
         thread, created = Thread.objects.get_or_create(
-            customer=customer,
-            assistant=assistant,
+            external_customer_phone=external_customer_phone,  # El número de teléfono del cliente externo
+            assistant=assistant,  # La empresa (representada por Assistant)
             defaults={"thread_id": "openai_thread_id"},
         )
 
-        # Verify if human intervention is needed
+        if created:
+            # Si se creó un nuevo thread, se imprime un mensaje
+            print(
+                f"Created a new thread for {external_customer_phone} with {assistant.company.name}"
+            )
+        else:
+            # Si ya existía, actualizar el campo 'last_interaction'
+            thread.last_interaction = timezone.now()
+            thread.save(
+                update_fields=["last_interaction"]
+            )  # Solo actualizar el campo 'last_interaction'
+            print(
+                f"Updated 'last_interaction' for existing thread {thread.thread_id}"
+            )
+
+        # Verificar si es necesaria la intervención humana
         if self.is_human_intervention_required(thread):
-            # If the thread requires human intervention, stop further processing
             print("Human intervention is required for this thread.", thread)
-            return  # You can return an appropriate message if needed
+            return  # Detener si necesita intervención humana
 
         # If no human intervention is required, continue with processing
         self.process_message(
             message_content,
             thread,
             assistant,
-            channel,
-            external_customer_number,
-            clinic_whatsapp_number,
+            self.channel,
+            external_customer_phone,
+            company_whatsapp_number,
         )
 
     def is_human_intervention_required(self, thread: Thread) -> bool:
@@ -111,7 +111,7 @@ class BotService:
         assistant,
         channel,
         external_customer_number,
-        clinic_whatsapp_number,
+        company_whatsapp_number,
     ):
         """
         Processes the message normally with OpenAI unless human intervention is required.
@@ -145,7 +145,7 @@ class BotService:
 
         # Send the response back to the external customer
         channel.send_message(
-            external_customer_number, response, clinic_whatsapp_number
+            external_customer_number, response, company_whatsapp_number
         )
 
     def handle_required_action(self, run: Any, thread: Thread) -> str:

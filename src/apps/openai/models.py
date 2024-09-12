@@ -1,15 +1,15 @@
 from django.db import models
 
-from apps.customers.models import Customer
+from apps.companies.models import Company
 
 
 class Assistant(models.Model):
     assistant_id = models.CharField(
         max_length=100, unique=True, null=True, blank=True
     )
-    customer = models.ForeignKey(
-        Customer,
-        related_name="customer_assistants",
+    company = models.ForeignKey(
+        Company,
+        related_name="company_assistants",
         on_delete=models.SET_NULL,
         null=True,
     )
@@ -25,4 +25,4 @@ class Assistant(models.Model):
     tool_resources = models.JSONField(default=dict, null=True, blank=True)
 
     def __str__(self):
-        return self.name
+        return str(self.name + self.assistant_id)

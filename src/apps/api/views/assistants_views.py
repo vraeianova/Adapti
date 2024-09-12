@@ -77,6 +77,7 @@ class AssistantSyncView(APIView):
 
         all_assistants = assistant_service.list_assistants()
         all_assistants_dict = all_assistants.to_dict()
+        print("verificar assistant", all_assistants_dict)
 
         db_assistant_ids = set(
             Assistant.objects.values_list("assistant_id", flat=True)
