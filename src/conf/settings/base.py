@@ -58,6 +58,7 @@ LOCAL_APPS = [
     "apps.companies",
     "apps.openai",
     "apps.conversations",
+    "apps.appointments",
 ]
 
 
