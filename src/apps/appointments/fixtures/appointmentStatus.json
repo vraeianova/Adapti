@@ -1,0 +1,31 @@
+[
+    {
+      "model": "appointments.appointmentstatus",
+      "pk": 1,
+      "fields": {
+        "description": "Programada"
+      }
+    },
+    {
+      "model": "appointments.appointmentstatus",
+      "pk": 2,
+      "fields": {
+        "description": "Completada"
+      }
+    },
+    {
+      "model": "appointments.appointmentstatus",
+      "pk": 3,
+      "fields": {
+        "description": "Cancelada"
+      }
+    },
+    {
+      "model": "appointments.appointmentstatus",
+      "pk": 4,
+      "fields": {
+        "description": "No Asistió"
+      }
+    }
+  ]
+  
