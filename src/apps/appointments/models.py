@@ -5,6 +5,17 @@ from django.db import models
 from apps.doctors.models import Doctor
 
 
+class AppointmentType(models.Model):
+    id = models.AutoField(db_column="IdAppointmentType", primary_key=True)
+    description = models.CharField(db_column="Description", max_length=350)
+
+    class Meta:
+        db_table = "AppointmentType"
+
+    def __str__(self):
+        return self.description
+
+
 class AppointmentStatus(models.Model):
     id = models.AutoField(db_column="IdAppointmentStatus", primary_key=True)
     description = models.CharField(db_column="Description", max_length=350)

@@ -1,0 +1,24 @@
+[
+    {
+      "model": "appointments.appointmenttype",
+      "pk": 1,
+      "fields": {
+        "description": "General Consultation"
+      }
+    },
+    {
+      "model": "appointments.appointmenttype",
+      "pk": 2,
+      "fields": {
+        "description": "Follow-up"
+      }
+    },
+    {
+      "model": "appointments.appointmenttype",
+      "pk": 3,
+      "fields": {
+        "description": "Emergency"
+      }
+    }
+  ]
+  
