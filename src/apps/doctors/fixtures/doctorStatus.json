@@ -1,0 +1,30 @@
+[
+    {
+      "model": "doctors.doctorstatus",
+      "pk": 1,
+      "fields": {
+        "description": "active"
+      }
+    },
+    {
+      "model": "doctors.doctorstatus",
+      "pk": 2,
+      "fields": {
+        "description": "inactive"
+      }
+    },
+    {
+      "model": "doctors.doctorstatus",
+      "pk": 3,
+      "fields": {
+        "description": "on_vacations"
+      }
+    },
+    {
+      "model": "doctors.doctorstatus",
+      "pk": 4,
+      "fields": {
+        "description": "suspended"
+      }
+    }
+  ]
