@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 from apps.doctors.models import Doctor
+from apps.patients.models import Patient
 
 
 class AppointmentType(models.Model):
@@ -46,13 +47,13 @@ class Appointment(models.Model):
         blank=True,
         null=True,
     )
-    # patient = models.ForeignKey(
-    #     Patient,
-    #     models.DO_NOTHING,
-    #     db_column="Patient",
-    #     blank=False,
-    #     null=False,
-    # )
+    patient = models.ForeignKey(
+        Patient,
+        models.DO_NOTHING,
+        db_column="Patient",
+        blank=True,
+        null=True,
+    )
     creation_date = models.DateTimeField(
         db_column="CreationDate", auto_now_add=True
     )
