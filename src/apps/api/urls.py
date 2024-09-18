@@ -5,6 +5,7 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
+from .views.appointments_views import AppointmentCreateView
 from .views.assistants_views import AssistantCreateView, AssistantSyncView
 from .views.conversations_views import HumanInterventionUpdateView
 from .views.whatsapp_views import WhatsappWebhook
@@ -32,5 +33,11 @@ urlpatterns = [
         "human-intervention/<str:thread_id>/update/",
         HumanInterventionUpdateView.as_view(),
         name="human-intervention-update",
+    ),
+    # APPOINTMENTS VIEWS
+    path(
+        "appointments/create/",
+        AppointmentCreateView.as_view(),
+        name="appointment-create",
     ),
 ]

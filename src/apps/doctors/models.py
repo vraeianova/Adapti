@@ -1,3 +1,4 @@
+from django.contrib import admin
 from django.db import models
 
 from apps.utils.directory_path import user_profile_pic_directory_path
@@ -104,3 +105,9 @@ class DoctorUnavailableDate(models.Model):
         return (
             f"{self.doctor} no está disponible el {self.date} ({self.reason})"
         )
+
+
+admin.site.register(DoctorStatus)
+admin.site.register(Doctor)
+admin.site.register(DoctorAvailability)
+admin.site.register(DoctorUnavailableDate)
