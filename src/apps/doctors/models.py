@@ -19,9 +19,6 @@ class Doctor(models.Model):
     id = models.AutoField(db_column="IdDoctor", primary_key=True)
     first_name = models.CharField(db_column="FirstName", max_length=30)
     last_name = models.CharField(db_column="LastName", max_length=30)
-    slug = models.SlugField(
-        db_column="Slug", max_length=50
-    )  # TODO DELETE THIS
     description = models.TextField(
         db_column="Description", blank=True, null=True
     )
