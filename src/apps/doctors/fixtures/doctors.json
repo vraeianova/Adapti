@@ -1,0 +1,19 @@
+[
+    {
+      "model": "doctors.doctor",
+      "pk": 1,
+      "fields": {
+        "first_name": "John",
+        "last_name": "Doe",
+        "description": "An experienced cardiologist with over 15 years in practice.",
+        "profile_pic": "",
+        "background_pic": "",
+        "doctor_status": 1,
+        "specialization": "Cardiology",
+        "contact_email": "john.doe@example.com",
+        "contact_phone": "+1234567890",
+        "is_deleted": false
+      }
+    }
+    
+]
