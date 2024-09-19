@@ -58,6 +58,7 @@ if settings.DEBUG:
         path("__debug__/", include(debug_toolbar.urls)),
     ]
 
+# TODO DELETE THIS
 # Error Handling
-handler500 = "apps.utils.handler500"
-handler404 = "apps.utils.handler404"
+# handler500 = "apps.utils.handler500"
+# handler404 = "apps.utils.handler404"

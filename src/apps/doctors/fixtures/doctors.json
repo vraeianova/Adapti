@@ -7,13 +7,71 @@
         "last_name": "Doe",
         "description": "An experienced cardiologist with over 15 years in practice.",
         "profile_pic": "",
-        "background_pic": "",
         "doctor_status": 1,
         "specialization": "Cardiology",
         "contact_email": "john.doe@example.com",
-        "contact_phone": "+1234567890",
+        "contact_phone": "whatsapp:+1234567890",
+        "is_deleted": false
+      }
+    },
+    {
+      "model": "doctors.doctor",
+      "pk": 2,
+      "fields": {
+        "first_name": "Emily",
+        "last_name": "Smith",
+        "description": "A dedicated pediatrician who loves working with children.",
+        "profile_pic": "",
+        "doctor_status": 1,
+        "specialization": "Pediatrics",
+        "contact_email": "emily.smith@example.com",
+        "contact_phone": "whatsapp:+1987654321",
+        "is_deleted": false
+      }
+    },
+    {
+      "model": "doctors.doctor",
+      "pk": 3,
+      "fields": {
+        "first_name": "Michael",
+        "last_name": "Johnson",
+        "description": "Specialist in dermatology with a focus on skin cancer treatment.",
+        "profile_pic": "",
+        "doctor_status": 3,
+        "specialization": "Dermatology",
+        "contact_email": "michael.johnson@example.com",
+        "contact_phone": "whatsapp:+1123456789",
+        "is_deleted": false
+      }
+    },
+    {
+      "model": "doctors.doctor",
+      "pk": 4,
+      "fields": {
+        "first_name": "Sarah",
+        "last_name": "Williams",
+        "description": "Expert neurologist with a passion for patient care.",
+        "profile_pic": "",
+        "doctor_status": 1,
+        "specialization": "Neurology",
+        "contact_email": "sarah.williams@example.com",
+        "contact_phone": "whatsapp:+1098765432",
+        "is_deleted": false
+      }
+    },
+    {
+      "model": "doctors.doctor",
+      "pk": 5,
+      "fields": {
+        "first_name": "David",
+        "last_name": "Brown",
+        "description": "General practitioner with over 20 years of experience.",
+        "profile_pic": "",
+        "doctor_status": 2,
+        "specialization": "General Medicine",
+        "contact_email": "david.brown@example.com",
+        "contact_phone": "whatsapp:+1230984567",
         "is_deleted": false
       }
     }
-    
 ]

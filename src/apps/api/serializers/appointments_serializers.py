@@ -1,23 +1,33 @@
+from django.utils import timezone
 from rest_framework import serializers
 
-from apps.appointments.models import Appointment
+from apps.api.serializers.doctor_serializers import DoctorSerializer
+from apps.api.serializers.patient_serializers import PatientSerializer
+from apps.appointments.models import Appointment, AppointmentStatus
+
+
+class AppointmentStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AppointmentStatus
+        fields = ["id", "description"]
 
 
 class AppointmentSerializer(serializers.ModelSerializer):
-    # appointment_status = AppointmentStatusSerializer()
-    # doctor = DoctorSerializer()
-    # patient = PatientSerializer()
+    doctor = DoctorSerializer()
+    appointment_status = AppointmentStatusSerializer()
+    patient = PatientSerializer()
+    # doctor = serializers.PrimaryKeyRelatedField(queryset=Doctor.objects.all())
 
     class Meta:
         model = Appointment
         fields = [
             "id",
-            # "doctor",
+            "doctor",
             "appointment_date",
             "start_time",
             "end_time",
-            # "appointment_status",
-            # "patient",
+            "appointment_status",
+            "patient",
             "creation_date",
             "appointment_type",
             "notes",
@@ -82,3 +92,10 @@ class AppointmentCreateSerializer(serializers.ModelSerializer):
             )
 
         return data
+
+    def validate_appointment_date(self, value):
+        if value < timezone.now().today().date():
+            raise serializers.ValidationError(
+                "No se puede crear una cita en el pasado."
+            )
+        return value

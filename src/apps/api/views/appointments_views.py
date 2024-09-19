@@ -2,7 +2,7 @@ from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.api.serializers.appointments_serializers import (  # DoctorSerializer,; PatientSerializer,
+from apps.api.serializers.appointments_serializers import (
     AppointmentCreateSerializer,
     AppointmentSerializer,
 )
