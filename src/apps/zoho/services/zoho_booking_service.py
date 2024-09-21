@@ -24,6 +24,7 @@ class ZohoBookingsService:
         }
 
     def get_workspaces(self, workspace_id=None):
+        print("verifica que id le doy", workspace_id)
         url = f"{self.api_url}/workspaces"
         if workspace_id:
             url += f"?workspace_id={workspace_id}"

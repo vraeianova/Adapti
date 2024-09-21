@@ -21,6 +21,7 @@ class ZohoConfig:
         )
 
     def get_zoho_auth(self):
+        print("entrando a zoho auth")
         return ZohoAuth(
             client_id=self.client_id,
             client_secret=self.client_secret,

@@ -32,7 +32,6 @@ class BotService:
             openai_config = OpenAIConfig()
         if zoho_config is None:
             zoho_config = ZohoConfig()
-        # zoho_config = None
 
         self.assistant_service = openai_config.get_assistant_service()
         self.thread_service = openai_config.get_thread_service()
@@ -299,7 +298,6 @@ class BotService:
                     run_id=run.id,
                     tool_outputs=tool_outputs,
                 )
-                print("process running", run)
                 print("process running status", run.status)
                 if run.status == "completed":
                     print("process completed")
