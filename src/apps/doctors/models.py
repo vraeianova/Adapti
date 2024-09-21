@@ -15,6 +15,7 @@ class DoctorStatus(models.Model):
         return self.description
 
 
+# TODO CREATE SPECIALIZATION TABLE
 class Doctor(models.Model):
     id = models.AutoField(db_column="IdDoctor", primary_key=True)
     first_name = models.CharField(db_column="FirstName", max_length=30)
@@ -51,7 +52,7 @@ class Doctor(models.Model):
         db_table = "Doctor"
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        return f"{self.first_name} {self.last_name} {self.specialization}"
 
 
 class DoctorAvailability(models.Model):

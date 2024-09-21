@@ -9,10 +9,13 @@ class ThreadService:
         return self.client.beta.threads.create(**kwargs)
 
     def list_threads(self):
-        return self.client.beta.threads.list()
+        return NotImplemented
 
     def retrieve_thread(self, thread_id):
-        return self.client.beta.threads.retrieve(id=thread_id)
+        return self.client.beta.threads.retrieve(thread_id=thread_id)
+
+    def delete_thread(self, thread_id):
+        return self.client.beta.threads.delete(thread_id=thread_id)
 
     def create_thread_and_run(self, **kwargs):
         return self.client.beta.threads.create_and_run(**kwargs)

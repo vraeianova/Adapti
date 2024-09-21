@@ -1,4 +1,4 @@
-from rest_framework import status, viewsets
+from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -7,6 +7,7 @@ from apps.api.serializers.appointments_serializers import (
     AppointmentSerializer,
 )
 from apps.appointments.models import Appointment
+from apps.appointments.services.appointment_service import AppointmentService
 
 
 # from apps.doctors.models import Doctor
@@ -15,24 +16,14 @@ from apps.appointments.models import Appointment
 
 class AppointmentCreateView(APIView):
     def post(self, request, *args, **kwargs):
-        create_serializer = AppointmentCreateSerializer(data=request.data)
-        if not create_serializer.is_valid():
-            return Response(
-                create_serializer.errors, status=status.HTTP_400_BAD_REQUEST
-            )
+        # Llamamos al servicio para crear la cita
+        result = AppointmentService.create_appointment(request.data)
 
-        try:
-            appointment = create_serializer.save()
-        except Exception as e:
-            return Response(
-                {"error": f"Failed to create appointment: {str(e)}"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        response_serializer = AppointmentSerializer(appointment)
-        return Response(
-            response_serializer.data, status=status.HTTP_201_CREATED
-        )
+        # Devolvemos la respuesta según el status code del servicio
+        if "error" not in result:
+            return Response(result["data"], status=result["status_code"])
+        else:
+            return Response(result["details"], status=result["status_code"])
 
 
 class AppointmentViewSet(viewsets.ModelViewSet):

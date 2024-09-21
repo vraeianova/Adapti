@@ -6,6 +6,7 @@ class Patient(models.Model):
     name = models.CharField(
         db_column="Name", max_length=100, blank=True, null=True
     )
+    email = models.EmailField("Email", blank=True, null=True, max_length=254)
     phone_number = models.CharField(
         db_column="PhoneNumber", max_length=15, blank=True, null=True
     )

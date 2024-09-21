@@ -3,10 +3,16 @@ from typing import Any, Dict
 
 from django.utils import timezone
 
+from apps.api.serializers.appointments_serializers import (
+    AppointmentCreateSerializer,
+    AppointmentSerializer,
+)
 from apps.bot.channels.channel_manager import ChannelManager
 from apps.conversations.models import Thread
+from apps.doctors.models import Doctor
 from apps.openai.config import OpenAIConfig
 from apps.openai.models import Assistant
+from apps.patients.models import Patient
 from apps.zoho.config import ZohoConfig
 
 
@@ -131,7 +137,8 @@ class BotService:
         run = self.run_service.create_run(
             thread_id=thread.thread_id, assistant_id=assistant.assistant_id
         )
-
+        print("verify run", run)
+        print("verify run status", run.status)
         # Handle the run status and respond accordingly
         if run.status == "completed":
             messages = self.message_service.list_messages(
@@ -139,6 +146,7 @@ class BotService:
             )
             response = messages.data[0].content[0].text.value
         elif run.status == "requires_action":
+            print("Requires action")
             response = self.handle_required_action(run, thread)
         else:
             response = "The process is unexpected."
@@ -147,6 +155,32 @@ class BotService:
         channel.send_message(
             external_customer_number, response, company_whatsapp_number
         )
+
+    def create_appointment(
+        self, appointment_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        Crea una cita llamando directamente al serializador de creación de citas.
+
+        Args:
+            appointment_data (Dict[str, Any]): Los datos necesarios para crear una cita.
+
+        Returns:
+            Dict[str, Any]: Los datos de la cita creada o un mensaje de error.
+        """
+        # Usar el serializador para validar y guardar la cita
+        serializer = AppointmentCreateSerializer(data=appointment_data)
+
+        if serializer.is_valid():
+            # Si los datos son válidos, guarda la cita y retorna los datos
+            appointment = serializer.save()
+            return AppointmentSerializer(appointment).data
+        else:
+            # Si los datos no son válidos, devolver los errores
+            return {
+                "error": "Failed to create appointment",
+                "details": serializer.errors,
+            }
 
     def handle_required_action(self, run: Any, thread: Thread) -> str:
         """
@@ -163,6 +197,73 @@ class BotService:
 
         # Handle specific tool actions required by the assistant
         for tool in run.required_action.submit_tool_outputs.tool_calls:
+            if tool.function.name == "create_appointment":
+                try:
+                    print("creating appointment...")
+                    appointment_data = json.loads(tool.function.arguments)
+
+                    # Llamada directa al serializador de creación de citas
+                    appointment_response = self.create_appointment(
+                        appointment_data
+                    )
+
+                    if "error" not in appointment_response:
+                        tool_outputs.append(
+                            {
+                                "tool_call_id": tool.id,
+                                "output": json.dumps(appointment_response),
+                            }
+                        )
+                    else:
+                        tool_outputs.append(
+                            {
+                                "tool_call_id": tool.id,
+                                "output": "Failed to create appointment.",
+                            }
+                        )
+                except Exception as e:
+                    print(f"Error while creating appointment: {str(e)}")
+                    tool_outputs.append(
+                        {
+                            "tool_call_id": tool.id,
+                            "output": "Error in processing appointment creation.",
+                        }
+                    )
+            if tool.function.name == "get_doctors":
+                print("doctors")
+                doctors = list(
+                    Doctor.objects.filter().values(
+                        "id", "first_name", "last_name", "specialization"
+                    )
+                )
+                tool_outputs.append(
+                    {
+                        "tool_call_id": tool.id,
+                        "output": json.dumps(doctors),
+                    }
+                )
+            if tool.function.name == "create_patient":
+                print("creating patient...")
+                arguments = json.loads(tool.function.arguments)
+                name = arguments.get("name")
+                email = arguments.get("email")
+                phone_number = arguments.get("phone_number")
+                address = arguments.get("address")
+
+                patient = Patient()
+                patient.name = name
+                patient.email = email
+                patient.phone_number = phone_number
+                patient.address = address
+                patient.save()
+
+                print("patient created", patient)
+                tool_outputs.append(
+                    {
+                        "tool_call_id": tool.id,
+                        "output": json.dumps(patient.id),
+                    }
+                )
             if tool.function.name == "get_workspaces":
                 arguments = json.loads(tool.function.arguments)
                 workspace_id = arguments.get("workspace_id")
@@ -175,7 +276,7 @@ class BotService:
                         "output": json.dumps(workspace_info),
                     }
                 )
-            elif tool.function.name == "detect_human_intervention":
+            if tool.function.name == "detect_human_intervention":
                 # Mark the thread as needing human intervention
                 thread.human_intervention_needed = True
                 thread.save()
@@ -188,18 +289,28 @@ class BotService:
 
         # Submit the tool outputs and process the response
         if tool_outputs:
+            print("submiting tool")
             try:
                 run = self.run_service.submit_tool_outputs_to_run(
                     thread_id=run.thread_id,
                     run_id=run.id,
                     tool_outputs=tool_outputs,
                 )
+                print("process running", run)
+                print("process running status", run.status)
                 if run.status == "completed":
+                    print("process completed")
                     messages = self.message_service.list_messages(
                         thread_id=run.thread_id
                     )
                     response = messages.data[0].content[0].text.value
+
+                elif run.status == "requires_action":
+                    print("Requires action again")
+                    response = self.handle_required_action(run, thread)
+
                 else:
+                    print("probablemente entre aqui")
                     response = "The process is unexpected."
             except Exception as e:
                 print(f"Failed to submit tool outputs: {str(e)}")
