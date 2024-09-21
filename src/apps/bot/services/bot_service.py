@@ -30,13 +30,15 @@ class BotService:
 
         if openai_config is None:
             openai_config = OpenAIConfig()
-        zoho_config = None
+        if zoho_config is None:
+            zoho_config = ZohoConfig()
+        # zoho_config = None
 
         self.assistant_service = openai_config.get_assistant_service()
         self.thread_service = openai_config.get_thread_service()
         self.run_service = openai_config.get_run_service()
         self.message_service = openai_config.get_message_service()
-        # self.zoho_booking_service = zoho_config.get_zoho_bookings_service()
+        self.zoho_booking_service = zoho_config.get_zoho_bookings_service()
 
         self.channel = self.channel_manager.get_channel(channel_name)
         if not self.channel:
@@ -270,6 +272,7 @@ class BotService:
                 workspace_info = self.zoho_booking_service.get_workspaces(
                     workspace_id
                 )
+                print("verificar workspaces info", workspace_id)
                 tool_outputs.append(
                     {
                         "tool_call_id": tool.id,
