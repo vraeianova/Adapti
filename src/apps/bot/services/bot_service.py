@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from typing import Any, Dict
 
 from django.utils import timezone
@@ -55,9 +56,7 @@ class BotService:
         """
         external_customer_phone = recipient_info["from_number"]
         company_whatsapp_number = recipient_info["to_number"]
-        print("company wha", company_whatsapp_number)
-        # Obtener el cliente (empresa) y el asistente
-        # company = self._get_customer_by_phone(company_whatsapp_number)
+
         assistant = Assistant.objects.get(
             company__phone=company_whatsapp_number
         )
@@ -138,7 +137,6 @@ class BotService:
         run = self.run_service.create_run(
             thread_id=thread.thread_id, assistant_id=assistant.assistant_id
         )
-        print("verify run", run)
         print("verify run status", run.status)
         # Handle the run status and respond accordingly
         if run.status == "completed":
@@ -197,31 +195,64 @@ class BotService:
         tool_outputs = []
 
         # Handle specific tool actions required by the assistant
+
         for tool in run.required_action.submit_tool_outputs.tool_calls:
-            if tool.function.name == "create_appointment":
+            print("verify the tool", tool.function.name)
+            if tool.function.name == "book_appointment":
                 try:
-                    print("creating appointment...")
-                    appointment_data = json.loads(tool.function.arguments)
+                    print("booking appointment...")
+                    arguments = json.loads(tool.function.arguments)
+                    print("verificar los appointments de booking", arguments)
 
                     # Llamada directa al serializador de creación de citas
-                    appointment_response = self.create_appointment(
-                        appointment_data
-                    )
+                    # appointment_response = self.create_appointment(
+                    #     appointment_data
+                    # )
 
-                    if "error" not in appointment_response:
-                        tool_outputs.append(
-                            {
-                                "tool_call_id": tool.id,
-                                "output": json.dumps(appointment_response),
-                            }
+                    service_id = arguments.get("service_id")
+                    staff_id = arguments.get("staff_id")
+                    group_id = arguments.get("group_id")
+                    from_time = arguments.get("from_time")
+                    to_time = arguments.get("to_time")
+                    time_zone = arguments.get("time_zone")
+                    customer_details = arguments.get("customer_details")
+                    notes = arguments.get("notes")
+                    additional_fields = arguments.get("additional_fields")
+
+                    appointment_info = (
+                        self.zoho_booking_service.book_appointment(
+                            service_id,
+                            staff_id,
+                            group_id,
+                            from_time,
+                            to_time,
+                            time_zone,
+                            customer_details,
+                            notes,
+                            additional_fields,
                         )
-                    else:
-                        tool_outputs.append(
-                            {
-                                "tool_call_id": tool.id,
-                                "output": "Failed to create appointment.",
-                            }
-                        )
+                    )
+                    print("verificar appointment info", appointment_info)
+                    tool_outputs.append(
+                        {
+                            "tool_call_id": tool.id,
+                            "output": json.dumps(appointment_info),
+                        }
+                    )
+                    # if "error" not in appointment_data:
+                    #     tool_outputs.append(
+                    #         {
+                    #             "tool_call_id": tool.id,
+                    #             "output": json.dumps(appointment_data),
+                    #         }
+                    #     )
+                    # else:
+                    #     tool_outputs.append(
+                    #         {
+                    #             "tool_call_id": tool.id,
+                    #             "output": "Failed to create appointment.",
+                    #         }
+                    #     )
                 except Exception as e:
                     print(f"Error while creating appointment: {str(e)}")
                     tool_outputs.append(
@@ -230,8 +261,24 @@ class BotService:
                             "output": "Error in processing appointment creation.",
                         }
                     )
+            if tool.function.name == "update_appointment":
+                print("entro al update tool")
+                arguments = json.loads(tool.function.arguments)
+                booking_id = arguments.get("booking_id")
+                action = arguments.get("action")
+
+                update_appointment_response = (
+                    self.zoho_booking_service.update_appointment(
+                        booking_id, action
+                    )
+                )
+                tool_outputs.append(
+                    {
+                        "tool_call_id": tool.id,
+                        "output": json.dumps(update_appointment_response),
+                    }
+                )
             if tool.function.name == "get_doctors":
-                print("doctors")
                 doctors = list(
                     Doctor.objects.filter().values(
                         "id", "first_name", "last_name", "specialization"
@@ -265,17 +312,60 @@ class BotService:
                         "output": json.dumps(patient.id),
                     }
                 )
-            if tool.function.name == "get_workspaces":
+            if tool.function.name == "fetch_workspaces":
                 arguments = json.loads(tool.function.arguments)
                 workspace_id = arguments.get("workspace_id")
-                workspace_info = self.zoho_booking_service.get_workspaces(
+                workspace_info = self.zoho_booking_service.fetch_workspaces(
                     workspace_id
                 )
-                print("verificar workspaces info", workspace_id)
+                print("verificar workspaces info", workspace_info)
                 tool_outputs.append(
                     {
                         "tool_call_id": tool.id,
                         "output": json.dumps(workspace_info),
+                    }
+                )
+            if tool.function.name == "fetch_staff":
+                arguments = json.loads(tool.function.arguments)
+                service_id = arguments.get("service_id")
+                staff_id = arguments.get("staff_id")
+                staff_info = self.zoho_booking_service.fetch_staff(
+                    service_id, staff_id
+                )
+                tool_outputs.append(
+                    {
+                        "tool_call_id": tool.id,
+                        "output": json.dumps(staff_info),
+                    }
+                )
+            if tool.function.name == "fetch_services":
+                arguments = json.loads(tool.function.arguments)
+                workspace_id = arguments.get("workspace_id")
+                service_id = arguments.get("service_id")
+                staff_id = arguments.get("staff_id")
+                service_info = self.zoho_booking_service.fetch_services(
+                    workspace_id, service_id, staff_id
+                )
+                tool_outputs.append(
+                    {
+                        "tool_call_id": tool.id,
+                        "output": json.dumps(service_info),
+                    }
+                )
+            if tool.function.name == "fetch_availability":
+                arguments = json.loads(tool.function.arguments)
+                service_id = arguments.get("service_id")
+                staff_id = arguments.get("staff_id")
+                selected_date = arguments.get("selected_date")
+                availability_info = (
+                    self.zoho_booking_service.fetch_availability(
+                        service_id, staff_id, selected_date
+                    )
+                )
+                tool_outputs.append(
+                    {
+                        "tool_call_id": tool.id,
+                        "output": json.dumps(availability_info),
                     }
                 )
             if tool.function.name == "detect_human_intervention":
@@ -288,7 +378,14 @@ class BotService:
                         "output": "Responde que en breve recibirá asistencia",
                     }
                 )
-
+            if tool.function.name == "get_current_datetime":
+                current_datetime = datetime.now().strftime("%d-%b-%Y %H:%M:%S")
+                tool_outputs.append(
+                    {
+                        "tool_call_id": tool.id,
+                        "output": json.dumps(current_datetime),
+                    }
+                )
         # Submit the tool outputs and process the response
         if tool_outputs:
             print("submiting tool")

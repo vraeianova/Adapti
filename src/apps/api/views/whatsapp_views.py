@@ -23,6 +23,9 @@ class WhatsappWebhook(APIView):
         from_number = request.data.get("From", "")
         to_number = request.data.get("To", "")
         message_sid = request.data.get("MessageSid", "")
+        profile_name = request.data.get("ProfileName", "")
+
+        print("veririca los fields de whatsapps", request.data)
 
         # Verificar que los datos necesarios existan
         if (
@@ -30,6 +33,7 @@ class WhatsappWebhook(APIView):
             or not from_number
             or not to_number
             or not message_sid
+            or not profile_name
         ):
             return Response(
                 {"error": "Missing necessary message details."}, status=400
@@ -42,13 +46,10 @@ class WhatsappWebhook(APIView):
         processed_messages.add(message_sid)
 
         # Obtener fecha y hora actuales para hacer futuros cálculos
-        now = datetime.now()
-        current_date = now.strftime("%Y-%m-%d")
-        current_time = now.strftime("%H:%M:%S")
 
         # Concatenar la fecha y hora al mensaje entrante para que el bot tenga acceso a esta información
         enriched_msg = (
-            f"{incoming_msg}. Fecha: {current_date}. Hora: {current_time}"
+            f"profile_name: {profile_name} message_body: {incoming_msg}."
         )
 
         # Manejar el mensaje usando la fecha y hora actuales

@@ -52,7 +52,8 @@ class ZohoAuth:
                 self.access_token = token.access_token
                 self.refresh_token = token.refresh_token
                 self.token_expiry = token.token_expiry
-                print("Tokens loaded successfully")
+                print("Access token loaded ", self.access_token)
+                print("Refresh token loaded", self.access_token)
             else:
                 print(
                     "No existing tokens found. Authorization Code is required to obtain new tokens."
