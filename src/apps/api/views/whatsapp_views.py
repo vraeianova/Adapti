@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -25,9 +23,6 @@ class WhatsappWebhook(APIView):
         message_sid = request.data.get("MessageSid", "")
         profile_name = request.data.get("ProfileName", "")
 
-        print("veririca los fields de whatsapps", request.data)
-
-        # Verificar que los datos necesarios existan
         if (
             not incoming_msg
             or not from_number
@@ -39,20 +34,13 @@ class WhatsappWebhook(APIView):
                 {"error": "Missing necessary message details."}, status=400
             )
 
-        # Verificar si el mensaje ya fue procesado
         if message_sid in processed_messages:
             return Response({"info": "Message already processed"}, status=200)
 
         processed_messages.add(message_sid)
 
-        # Obtener fecha y hora actuales para hacer futuros cálculos
+        enriched_msg = f"{profile_name} says: {incoming_msg}."
 
-        # Concatenar la fecha y hora al mensaje entrante para que el bot tenga acceso a esta información
-        enriched_msg = (
-            f"profile_name: {profile_name} message_body: {incoming_msg}."
-        )
-
-        # Manejar el mensaje usando la fecha y hora actuales
         self.bot_service.handle_message(
             enriched_msg,
             {

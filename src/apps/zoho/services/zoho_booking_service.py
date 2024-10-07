@@ -116,7 +116,6 @@ class ZohoBookingsService:
         if service_id:
             params["service_id"] = service_id
 
-        # Verifica si hay parámetros que añadir a la URL.
         if params:
             query_string = "&".join(
                 [f"{key}={value}" for key, value in params.items()]
@@ -207,6 +206,7 @@ class ZohoBookingsService:
                 customer_details
             ),  # Se debe serializar como JSON
         }
+        print("verificar los fields en book apopintment", fields)
 
         # Agrega los campos opcionales si se proporcionan
         if staff_id:
@@ -289,6 +289,49 @@ class ZohoBookingsService:
             "status": response_json.get("response", {}).get("status"),
         }
 
+    def reschedule_appointment(self, booking_id, staff_id, start_time):
+        print("entrando a reschedule function")
+        if not booking_id or not staff_id or not start_time:
+            return {
+                "status": "error",
+                "message": "Missing required parameters. 'booking_id', 'staff_id', and 'start_time' are mandatory.",
+            }
+        url = f"{self.api_url}/rescheduleappointment"
+        headers = self.get_headers()
+        fields = {
+            "booking_id": booking_id,
+            "staff_id": staff_id,
+            "start_time": start_time,
+        }
+        m = MultipartEncoder(fields=fields)
+        headers["Content-Type"] = m.content_type
+
+        response = requests.post(url, headers=headers, data=m)
+
+        if response.status_code != 200:
+            return {
+                "status": "error",
+                "message": "Failed to reschedule the appointment. Please try again.",
+            }
+
+        response_json = response.json()
+
+        reschedule_info = response_json.get("response", {}).get(
+            "returnvalue", {}
+        )
+        filtered_info = {
+            "customer_more_info": reschedule_info.get("customer_more_info"),
+            "customer_booking_start_time": reschedule_info.get(
+                "customer_booking_start_time"
+            ),
+            "booking_status": reschedule_info.get("status"),
+        }
+
+        return {
+            "data": filtered_info,
+            "status": response_json.get("response", {}).get("status"),
+        }
+
     def fetch_availability(
         self,
         service_id,
@@ -307,6 +350,7 @@ class ZohoBookingsService:
             "staff_id": staff_id,
             "selected_date": selected_date,
         }
+        print("verificar parametros enviados", params)
 
         # Añadir el campo requerido: staff_id, group_id, o resource_id
         if staff_id:
@@ -335,6 +379,7 @@ class ZohoBookingsService:
             .get("returnvalue", {})
             .get("data", [])
         )
+        print("verificar availability info", availability_info)
 
         # Formatear las horas disponibles como un string
         if availability_info:
@@ -342,6 +387,7 @@ class ZohoBookingsService:
             availability_message = (
                 f"Las horas disponibles son: {hours_string}."
             )
+            print("verificar horas", availability_message)
         else:
             availability_message = (
                 "No hay horas disponibles para la fecha seleccionada."

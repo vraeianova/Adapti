@@ -239,20 +239,6 @@ class BotService:
                             "output": json.dumps(appointment_info),
                         }
                     )
-                    # if "error" not in appointment_data:
-                    #     tool_outputs.append(
-                    #         {
-                    #             "tool_call_id": tool.id,
-                    #             "output": json.dumps(appointment_data),
-                    #         }
-                    #     )
-                    # else:
-                    #     tool_outputs.append(
-                    #         {
-                    #             "tool_call_id": tool.id,
-                    #             "output": "Failed to create appointment.",
-                    #         }
-                    #     )
                 except Exception as e:
                     print(f"Error while creating appointment: {str(e)}")
                     tool_outputs.append(
@@ -261,6 +247,24 @@ class BotService:
                             "output": "Error in processing appointment creation.",
                         }
                     )
+            if tool.function.name == "reschedule_appointment":
+                print("entro a reschedule tool")
+                arguments = json.loads(tool.function.arguments)
+                booking_id = arguments.get("booking_id")
+                staff_id = arguments.get("staff_id")
+                start_time = arguments.get("start_time")
+                reschedule_appointment_response = (
+                    self.zoho_booking_service.reschedule_appointment(
+                        booking_id, staff_id, start_time
+                    )
+                )
+                tool_outputs.append(
+                    {
+                        "tool_call_id": tool.id,
+                        "output": json.dumps(reschedule_appointment_response),
+                    }
+                )
+
             if tool.function.name == "update_appointment":
                 print("entro al update tool")
                 arguments = json.loads(tool.function.arguments)
